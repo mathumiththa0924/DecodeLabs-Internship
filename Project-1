@@ -1,1 +1,858 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Brewed & Co. — Artisan Café</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --white:    #ffffff;
+      --off-white:#F8FAFB;
+      --blue-light:#E8F4FD;
+      --blue:     #2B7BB9;
+      --blue-dark:#1A5C8A;
+      --navy:     #0D3B5E;
+      --text:     #1C2B3A;
+      --muted:    #5A7184;
+      --border:   #D6E8F5;
+      --shadow:   rgba(43,123,185,0.10);
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      color: var(--text);
+      background: var(--white);
+      overflow-x: hidden;
+    }
+
+    /* ── NAV ── */
+    nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0 6vw;
+      height: 64px;
+      background: rgba(255,255,255,0.92);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .nav-logo {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.4rem;
+      font-weight: 700;
+      color: var(--navy);
+      letter-spacing: -0.5px;
+    }
+
+    .nav-logo span { color: var(--blue); }
+
+    .nav-links {
+      display: flex; gap: 2rem; list-style: none;
+    }
+
+    .nav-links a {
+      text-decoration: none;
+      font-size: 0.875rem;
+      font-weight: 500;
+      color: var(--muted);
+      transition: color 0.2s;
+    }
+
+    .nav-links a:hover { color: var(--blue); }
+
+    .nav-cta {
+      background: var(--blue);
+      color: var(--white) !important;
+      padding: 0.5rem 1.2rem;
+      border-radius: 6px;
+      transition: background 0.2s !important;
+    }
+
+    .nav-cta:hover { background: var(--blue-dark) !important; color: var(--white) !important; }
+
+    .hamburger {
+      display: none;
+      flex-direction: column;
+      gap: 5px;
+      cursor: pointer;
+      background: none;
+      border: none;
+      padding: 4px;
+    }
+
+    .hamburger span {
+      display: block;
+      width: 24px; height: 2px;
+      background: var(--navy);
+      border-radius: 2px;
+      transition: 0.3s;
+    }
+
+    .mobile-menu {
+      display: none;
+      position: fixed;
+      top: 64px; left: 0; right: 0;
+      background: var(--white);
+      border-bottom: 1px solid var(--border);
+      padding: 1.5rem 6vw;
+      z-index: 99;
+      flex-direction: column;
+      gap: 1.2rem;
+    }
+
+    .mobile-menu.open { display: flex; }
+    .mobile-menu a { text-decoration: none; font-weight: 500; color: var(--text); font-size: 1rem; }
+
+    /* ── HERO ── */
+    .hero {
+      min-height: 100vh;
+      padding: 64px 6vw 0;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      align-items: center;
+      gap: 4rem;
+      background: linear-gradient(135deg, var(--white) 60%, var(--blue-light) 100%);
+    }
+
+    .hero-text { padding: 4rem 0; }
+
+    .hero-eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 0.8rem;
+      font-weight: 600;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--blue);
+      background: var(--blue-light);
+      border: 1px solid var(--border);
+      padding: 0.35rem 0.9rem;
+      border-radius: 100px;
+      margin-bottom: 1.5rem;
+    }
+
+    .hero-eyebrow::before {
+      content: '';
+      width: 6px; height: 6px;
+      background: var(--blue);
+      border-radius: 50%;
+    }
+
+    h1 {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(2.4rem, 4.5vw, 3.8rem);
+      font-weight: 700;
+      line-height: 1.15;
+      color: var(--navy);
+      margin-bottom: 1.2rem;
+      letter-spacing: -0.5px;
+    }
+
+    h1 em {
+      font-style: normal;
+      color: var(--blue);
+      position: relative;
+    }
+
+    h1 em::after {
+      content: '';
+      position: absolute;
+      bottom: 2px; left: 0; right: 0;
+      height: 3px;
+      background: var(--blue-light);
+      border-radius: 2px;
+      z-index: -1;
+    }
+
+    .hero-desc {
+      font-size: 1.05rem;
+      line-height: 1.75;
+      color: var(--muted);
+      max-width: 460px;
+      margin-bottom: 2.2rem;
+    }
+
+    .hero-btns {
+      display: flex;
+      gap: 1rem;
+      flex-wrap: wrap;
+    }
+
+    .btn-primary {
+      background: var(--blue);
+      color: var(--white);
+      padding: 0.8rem 1.8rem;
+      border-radius: 8px;
+      font-weight: 600;
+      font-size: 0.95rem;
+      text-decoration: none;
+      border: none;
+      cursor: pointer;
+      transition: background 0.2s, transform 0.15s;
+      display: inline-block;
+    }
+
+    .btn-primary:hover { background: var(--blue-dark); transform: translateY(-1px); }
+
+    .btn-secondary {
+      background: transparent;
+      color: var(--navy);
+      padding: 0.8rem 1.8rem;
+      border-radius: 8px;
+      font-weight: 600;
+      font-size: 0.95rem;
+      text-decoration: none;
+      border: 2px solid var(--border);
+      cursor: pointer;
+      transition: border-color 0.2s, color 0.2s;
+      display: inline-block;
+    }
+
+    .btn-secondary:hover { border-color: var(--blue); color: var(--blue); }
+
+    .hero-stats {
+      display: flex;
+      gap: 2.5rem;
+      margin-top: 3rem;
+      padding-top: 2rem;
+      border-top: 1px solid var(--border);
+    }
+
+    .stat-num {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.8rem;
+      font-weight: 700;
+      color: var(--navy);
+      line-height: 1;
+    }
+
+    .stat-label {
+      font-size: 0.8rem;
+      color: var(--muted);
+      margin-top: 0.3rem;
+    }
+
+    /* Hero visual */
+    .hero-visual {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .coffee-card {
+      background: var(--white);
+      border-radius: 24px;
+      padding: 2.5rem;
+      box-shadow: 0 20px 60px var(--shadow), 0 4px 16px rgba(0,0,0,0.06);
+      width: 100%;
+      max-width: 360px;
+      position: relative;
+    }
+
+    .coffee-card::before {
+      content: '';
+      position: absolute;
+      top: -12px; right: -12px;
+      width: 80px; height: 80px;
+      background: var(--blue-light);
+      border-radius: 50%;
+      z-index: -1;
+    }
+
+    .coffee-emoji {
+      font-size: 4rem;
+      display: block;
+      margin-bottom: 1rem;
+      animation: float 3s ease-in-out infinite;
+    }
+
+    @keyframes float {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-8px); }
+    }
+
+    .coffee-card h3 {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.4rem;
+      color: var(--navy);
+      margin-bottom: 0.5rem;
+    }
+
+    .coffee-card p {
+      font-size: 0.875rem;
+      color: var(--muted);
+      line-height: 1.6;
+      margin-bottom: 1.5rem;
+    }
+
+    .rating {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 0.875rem;
+      color: var(--muted);
+    }
+
+    .stars { color: #F59E0B; letter-spacing: 2px; }
+
+    .badge {
+      display: inline-block;
+      background: var(--blue-light);
+      color: var(--blue);
+      font-size: 0.75rem;
+      font-weight: 600;
+      padding: 0.25rem 0.75rem;
+      border-radius: 100px;
+      margin-bottom: 0.8rem;
+    }
+
+    /* ── MENU ── */
+    .section {
+      padding: 6rem 6vw;
+    }
+
+    .section-alt { background: var(--off-white); }
+
+    .section-header {
+      text-align: center;
+      margin-bottom: 3.5rem;
+    }
+
+    .section-eyebrow {
+      display: inline-block;
+      font-size: 0.78rem;
+      font-weight: 600;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--blue);
+      margin-bottom: 0.8rem;
+    }
+
+    h2 {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(1.8rem, 3vw, 2.8rem);
+      font-weight: 700;
+      color: var(--navy);
+      margin-bottom: 0.8rem;
+      letter-spacing: -0.3px;
+    }
+
+    .section-desc {
+      font-size: 1rem;
+      color: var(--muted);
+      max-width: 500px;
+      margin: 0 auto;
+      line-height: 1.7;
+    }
+
+    .menu-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 1.5rem;
+    }
+
+    .menu-card {
+      background: var(--white);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 1.8rem 1.5rem;
+      text-align: center;
+      transition: transform 0.2s, box-shadow 0.2s;
+      cursor: pointer;
+    }
+
+    .menu-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 12px 32px var(--shadow);
+    }
+
+    .menu-icon {
+      font-size: 2.8rem;
+      display: block;
+      margin-bottom: 1rem;
+    }
+
+    .menu-card h4 {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.15rem;
+      color: var(--navy);
+      margin-bottom: 0.4rem;
+    }
+
+    .menu-card p {
+      font-size: 0.85rem;
+      color: var(--muted);
+      line-height: 1.6;
+      margin-bottom: 1rem;
+    }
+
+    .menu-price {
+      font-weight: 700;
+      font-size: 1.1rem;
+      color: var(--blue);
+    }
+
+    /* ── FEATURES ── */
+    .features-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 2rem;
+    }
+
+    .feature-item {
+      display: flex;
+      gap: 1rem;
+      align-items: flex-start;
+    }
+
+    .feature-icon {
+      width: 48px; height: 48px;
+      background: var(--blue-light);
+      border-radius: 12px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.4rem;
+      flex-shrink: 0;
+    }
+
+    .feature-item h4 {
+      font-weight: 600;
+      font-size: 1rem;
+      color: var(--navy);
+      margin-bottom: 0.3rem;
+    }
+
+    .feature-item p {
+      font-size: 0.875rem;
+      color: var(--muted);
+      line-height: 1.6;
+    }
+
+    /* ── TESTIMONIALS ── */
+    .testimonials-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 1.5rem;
+    }
+
+    .testimonial-card {
+      background: var(--white);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 1.8rem;
+    }
+
+    .testimonial-stars { color: #F59E0B; font-size: 1rem; margin-bottom: 1rem; }
+
+    .testimonial-text {
+      font-size: 0.9rem;
+      color: var(--text);
+      line-height: 1.7;
+      margin-bottom: 1.2rem;
+      font-style: italic;
+    }
+
+    .testimonial-author {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .avatar {
+      width: 40px; height: 40px;
+      border-radius: 50%;
+      background: var(--blue-light);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.2rem;
+    }
+
+    .author-name {
+      font-weight: 600;
+      font-size: 0.875rem;
+      color: var(--navy);
+    }
+
+    .author-role {
+      font-size: 0.78rem;
+      color: var(--muted);
+    }
+
+    /* ── CTA ── */
+    .cta-section {
+      background: var(--navy);
+      padding: 6rem 6vw;
+      text-align: center;
+    }
+
+    .cta-section h2 { color: var(--white); }
+
+    .cta-section p {
+      color: rgba(255,255,255,0.65);
+      font-size: 1rem;
+      max-width: 480px;
+      margin: 1rem auto 2.5rem;
+      line-height: 1.7;
+    }
+
+    .cta-btn {
+      background: var(--blue);
+      color: var(--white);
+      padding: 1rem 2.5rem;
+      border-radius: 10px;
+      font-size: 1rem;
+      font-weight: 600;
+      text-decoration: none;
+      border: none;
+      cursor: pointer;
+      transition: background 0.2s, transform 0.15s;
+      display: inline-block;
+    }
+
+    .cta-btn:hover { background: #3a8fd4; transform: translateY(-2px); }
+
+    /* ── FOOTER ── */
+    footer {
+      background: var(--white);
+      border-top: 1px solid var(--border);
+      padding: 2.5rem 6vw;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+
+    .footer-logo {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.2rem;
+      font-weight: 700;
+      color: var(--navy);
+    }
+
+    .footer-logo span { color: var(--blue); }
+
+    footer p { font-size: 0.82rem; color: var(--muted); }
+
+    .footer-links {
+      display: flex;
+      gap: 1.5rem;
+      list-style: none;
+    }
+
+    .footer-links a {
+      font-size: 0.82rem;
+      color: var(--muted);
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+
+    .footer-links a:hover { color: var(--blue); }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 768px) {
+      .hero {
+        grid-template-columns: 1fr;
+        padding-top: 80px;
+        gap: 2.5rem;
+        text-align: center;
+      }
+
+      .hero-desc { margin: 0 auto 2rem; }
+      .hero-btns { justify-content: center; }
+      .hero-stats { justify-content: center; gap: 2rem; }
+      .hero-visual { order: -1; }
+      .coffee-card { max-width: 300px; margin: 0 auto; }
+
+      .nav-links { display: none; }
+      .hamburger { display: flex; }
+
+      footer {
+        flex-direction: column;
+        text-align: center;
+      }
+
+      .footer-links { justify-content: center; }
+    }
+
+    @media (max-width: 480px) {
+      .section { padding: 4rem 5vw; }
+      .hero-stats { gap: 1.5rem; }
+      .stat-num { font-size: 1.5rem; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .coffee-emoji { animation: none; }
+      * { transition: none !important; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- NAV -->
+  <nav>
+    <div class="nav-logo">Brewed<span>&</span>Co.</div>
+    <ul class="nav-links">
+      <li><a href="#menu">Menu</a></li>
+      <li><a href="#about">About</a></li>
+      <li><a href="#reviews">Reviews</a></li>
+      <li><a href="#visit" class="nav-cta">Visit Us</a></li>
+    </ul>
+    <button class="hamburger" id="hamburger" aria-label="Open menu">
+      <span></span><span></span><span></span>
+    </button>
+  </nav>
+
+  <!-- MOBILE MENU -->
+  <div class="mobile-menu" id="mobileMenu">
+    <a href="#menu" onclick="closeMenu()">Menu</a>
+    <a href="#about" onclick="closeMenu()">About</a>
+    <a href="#reviews" onclick="closeMenu()">Reviews</a>
+    <a href="#visit" onclick="closeMenu()" style="color:#2B7BB9;font-weight:600;">Visit Us →</a>
+  </div>
+
+  <!-- HERO -->
+  <section class="hero">
+    <div class="hero-text">
+      <span class="hero-eyebrow">Artisan Café · Est. 2018</span>
+      <h1>Where Every Cup Tells a <em>Story</em></h1>
+      <p class="hero-desc">
+        Handcrafted beverages, freshly baked pastries, and a cozy corner to call your own.
+        Made with love, served with warmth — every single day.
+      </p>
+      <div class="hero-btns">
+        <a href="#menu" class="btn-primary">Explore Menu</a>
+        <a href="#visit" class="btn-secondary">Find Us</a>
+      </div>
+      <div class="hero-stats">
+        <div>
+          <div class="stat-num">12+</div>
+          <div class="stat-label">Signature Drinks</div>
+        </div>
+        <div>
+          <div class="stat-num">4.9★</div>
+          <div class="stat-label">Customer Rating</div>
+        </div>
+        <div>
+          <div class="stat-num">6yrs</div>
+          <div class="stat-label">Crafting Joy</div>
+        </div>
+      </div>
+    </div>
+    <div class="hero-visual">
+      <div class="coffee-card">
+        <span class="coffee-emoji">☕</span>
+        <span class="badge">Today's Special</span>
+        <h3>Vanilla Cloud Latte</h3>
+        <p>Silky espresso layered with vanilla-infused cold foam and a hint of caramel drizzle.</p>
+        <div class="rating">
+          <span class="stars">★★★★★</span>
+          <span>4.9 · 240 reviews</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- MENU -->
+  <section class="section section-alt" id="menu">
+    <div class="section-header">
+      <span class="section-eyebrow">Our Menu</span>
+      <h2>Something for Every Mood</h2>
+      <p class="section-desc">From sunrise espresso to evening chai — brewed fresh, just for you.</p>
+    </div>
+    <div class="menu-grid">
+      <div class="menu-card">
+        <span class="menu-icon">☕</span>
+        <h4>Classic Espresso</h4>
+        <p>Rich, bold, and beautifully balanced. Our house blend single-origin shot.</p>
+        <div class="menu-price">$3.50</div>
+      </div>
+      <div class="menu-card">
+        <span class="menu-icon">🧋</span>
+        <h4>Brown Sugar Boba</h4>
+        <p>Creamy milk tea with handmade tapioca pearls and caramel tiger swirls.</p>
+        <div class="menu-price">$5.90</div>
+      </div>
+      <div class="menu-card">
+        <span class="menu-icon">🥐</span>
+        <h4>Butter Croissant</h4>
+        <p>Flaky, golden layers baked fresh each morning by our in-house baker.</p>
+        <div class="menu-price">$4.20</div>
+      </div>
+      <div class="menu-card">
+        <span class="menu-icon">🍵</span>
+        <h4>Matcha Bloom</h4>
+        <p>Ceremonial-grade matcha whisked with oat milk and a touch of honey.</p>
+        <div class="menu-price">$5.50</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ABOUT / FEATURES -->
+  <section class="section" id="about">
+    <div class="section-header">
+      <span class="section-eyebrow">Why Brewed & Co.</span>
+      <h2>More Than Just Coffee</h2>
+      <p class="section-desc">We believe good coffee should come with good vibes, always.</p>
+    </div>
+    <div class="features-grid">
+      <div class="feature-item">
+        <div class="feature-icon">🌱</div>
+        <div>
+          <h4>Ethically Sourced</h4>
+          <p>Beans sourced directly from small-scale farms with fair trade partnerships across 6 countries.</p>
+        </div>
+      </div>
+      <div class="feature-item">
+        <div class="feature-icon">🎨</div>
+        <div>
+          <h4>Latte Art on Every Cup</h4>
+          <p>Our baristas are trained artists. Every cup leaves our counter looking as good as it tastes.</p>
+        </div>
+      </div>
+      <div class="feature-item">
+        <div class="feature-icon">📶</div>
+        <div>
+          <h4>Fast Free Wi-Fi</h4>
+          <p>Work, study, or scroll — our high-speed connection keeps you connected all day long.</p>
+        </div>
+      </div>
+      <div class="feature-item">
+        <div class="feature-icon">🐾</div>
+        <div>
+          <h4>Pet Friendly Patio</h4>
+          <p>Your furry friends are welcome too. Fresh water bowls always available outside.</p>
+        </div>
+      </div>
+      <div class="feature-item">
+        <div class="feature-icon">♻️</div>
+        <div>
+          <h4>Zero Waste Packaging</h4>
+          <p>All cups, straws and bags are compostable or reusable. Bring your own, get 10% off!</p>
+        </div>
+      </div>
+      <div class="feature-item">
+        <div class="feature-icon">🎵</div>
+        <div>
+          <h4>Live Music Fridays</h4>
+          <p>Local musicians perform every Friday evening from 6–9 PM. No cover charge, ever.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- REVIEWS -->
+  <section class="section section-alt" id="reviews">
+    <div class="section-header">
+      <span class="section-eyebrow">Reviews</span>
+      <h2>What Our Regulars Say</h2>
+      <p class="section-desc">Real words from people who made us their daily ritual.</p>
+    </div>
+    <div class="testimonials-grid">
+      <div class="testimonial-card">
+        <div class="testimonial-stars">★★★★★</div>
+        <p class="testimonial-text">"The vanilla latte here literally changed my morning routine. Clean space, fast Wi-Fi, and the staff always remember my name. Perfect café."</p>
+        <div class="testimonial-author">
+          <div class="avatar">👩</div>
+          <div>
+            <div class="author-name">Priya Nair</div>
+            <div class="author-role">Freelance Designer</div>
+          </div>
+        </div>
+      </div>
+      <div class="testimonial-card">
+        <div class="testimonial-stars">★★★★★</div>
+        <p class="testimonial-text">"Best croissants in the city, hands down. I come every Saturday morning and it never disappoints. The matcha bloom is incredible too."</p>
+        <div class="testimonial-author">
+          <div class="avatar">👨</div>
+          <div>
+            <div class="author-name">Arun Krishnan</div>
+            <div class="author-role">Software Engineer</div>
+          </div>
+        </div>
+      </div>
+      <div class="testimonial-card">
+        <div class="testimonial-stars">★★★★★</div>
+        <p class="testimonial-text">"I brought my laptop here for one hour and ended up staying five. The atmosphere is just right — calm, bright, and honestly inspiring."</p>
+        <div class="testimonial-author">
+          <div class="avatar">👩</div>
+          <div>
+            <div class="author-name">Zara Mendis</div>
+            <div class="author-role">Graduate Student</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA -->
+  <section class="cta-section" id="visit">
+    <h2>Come Say Hello ☕</h2>
+    <p>Open daily from 7 AM to 9 PM. Located in the heart of the city — we saved you a table.</p>
+    <a href="#" class="cta-btn">Get Directions →</a>
+  </section>
+
+  <!-- FOOTER -->
+  <footer>
+    <div class="footer-logo">Brewed<span>&</span>Co.</div>
+    <p>© 2026 Brewed & Co. All rights reserved.</p>
+    <ul class="footer-links">
+      <li><a href="#menu">Menu</a></li>
+      <li><a href="#about">About</a></li>
+      <li><a href="#reviews">Reviews</a></li>
+    </ul>
+  </footer>
+
+  <script>
+    // Mobile menu toggle
+    const hamburger = document.getElementById('hamburger');
+    const mobileMenu = document.getElementById('mobileMenu');
+
+    hamburger.addEventListener('click', () => {
+      mobileMenu.classList.toggle('open');
+    });
+
+    function closeMenu() {
+      mobileMenu.classList.remove('open');
+    }
+
+    // Close menu on outside click
+    document.addEventListener('click', (e) => {
+      if (!hamburger.contains(e.target) && !mobileMenu.contains(e.target)) {
+        mobileMenu.classList.remove('open');
+      }
+    });
+
+    // Smooth scroll active nav highlight
+    const sections = document.querySelectorAll('section[id]');
+    const navLinks = document.querySelectorAll('.nav-links a');
+
+    window.addEventListener('scroll', () => {
+      let current = '';
+      sections.forEach(section => {
+        if (window.scrollY >= section.offsetTop - 100) {
+          current = section.getAttribute('id');
+        }
+      });
+      navLinks.forEach(link => {
+        link.style.color = link.getAttribute('href') === '#' + current ? '#2B7BB9' : '';
+      });
+    });
+
+    // Card hover subtle scale on menu items
+    document.querySelectorAll('.menu-card').forEach(card => {
+      card.addEventListener('mouseenter', () => {
+        card.style.borderColor = '#2B7BB9';
+      });
+      card.addEventListener('mouseleave', () => {
+        card.style.borderColor = '';
+      });
+    });
+  </script>
+</body>
+</html>
 
