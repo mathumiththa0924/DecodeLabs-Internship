@@ -1,0 +1,120 @@
+# 🔗 Project 4 — Frontend & Backend Integration
+
+**DecodeLabs Internship 2026 | Full Stack Development Track**
+
+---
+
+## 📌 Project Overview
+
+A fully integrated **Menu Manager** that connects the Project 1 frontend with the Project 3 backend API. Built with pure HTML, CSS, and JavaScript using the `fetch()` API with `async/await` for real-time data operations.
+
+---
+
+## 🎯 Goal
+
+Integrate frontend with backend APIs — send requests, display dynamic data, and handle errors gracefully.
+
+---
+
+## ✅ Key Requirements Met
+
+- ✅ **Requests sent from frontend to backend** using `fetch()`
+- ✅ **Dynamic data displayed** on UI from API response
+- ✅ **Basic errors handled** with toast notifications
+- ✅ `async/await` for clean asynchronous logic
+- ✅ Loading skeletons while data fetches
+- ✅ Live filter by category (GET with query params)
+- ✅ Add new items (POST request with validation)
+- ✅ Delete items (DELETE request)
+- ✅ Toggle availability (PUT request)
+- ✅ XSS protection with `textContent` / `escapeHtml()`
+- ✅ API connection status indicator
+
+---
+
+## 🛠️ Tech Stack
+
+| Technology | Usage |
+|------------|-------|
+| HTML5 / CSS3 | Frontend UI |
+| JavaScript (ES6+) | `fetch()`, `async/await`, DOM manipulation |
+| Node.js + Express | Backend API (Project 2/3) |
+| MongoDB + Mongoose | Database (Project 3) |
+
+---
+
+## 📁 Project Structure
+
+```
+Project-4/
+│
+├── menu_manager.html   # Integrated frontend (rename to index.html)
+└── README.md           # Documentation
+```
+
+> Backend files are in Project-2 and Project-3 folders.
+
+---
+
+## 🔄 How Integration Works
+
+```
+User Action (Click)
+      ↓
+Frontend fetch() call
+      ↓
+HTTP Request → Backend API (localhost:3001)
+      ↓
+Express handles route → Mongoose queries MongoDB
+      ↓
+JSON Response sent back
+      ↓
+Frontend renders data on DOM
+```
+
+---
+
+## 🚀 How to Run
+
+```bash
+# Step 1 — Start the backend (Project 3 folder)
+cd Project-3
+npm install
+node server_db.js
+# Backend runs at http://localhost:3001
+
+# Step 2 — Open frontend in browser
+# Just open menu_manager.html in any browser!
+# (No extra setup needed for frontend)
+```
+
+---
+
+## 🧠 Key Concepts Used
+
+| Concept | Where Used |
+|---------|-----------|
+| `async/await` | All API calls |
+| `fetch()` API | GET, POST, PUT, DELETE |
+| Error handling (`try/catch`) | Every API call |
+| DOM manipulation | Dynamic card rendering |
+| Form validation | Before POST request |
+| XSS prevention | `escapeHtml()` function |
+| HTTP status codes | `response.ok` check |
+| CORS | Configured in backend |
+
+---
+
+## 👩‍💻 Developer
+
+**Mathumiththa** — Full Stack Development Intern
+DecodeLabs Internship Batch 2026
+
+---
+
+## 🔗 All Projects
+
+- [Project 1 — Responsive Frontend](../Project-1/)
+- [Project 2 — Backend API](../Project-2/)
+- [Project 3 — Database Integration](../Project-3/)
+- [Project 4 — Full Integration](../Project-4/) ← You are here
