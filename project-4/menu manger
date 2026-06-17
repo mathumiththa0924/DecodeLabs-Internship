@@ -1,0 +1,720 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Brewed & Co. — Live Menu</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --white:      #ffffff;
+      --off-white:  #F8FAFB;
+      --blue-light: #E8F4FD;
+      --blue:       #2B7BB9;
+      --blue-dark:  #1A5C8A;
+      --navy:       #0D3B5E;
+      --text:       #1C2B3A;
+      --muted:      #5A7184;
+      --border:     #D6E8F5;
+      --success:    #10B981;
+      --error:      #EF4444;
+      --warning:    #F59E0B;
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: var(--off-white);
+      color: var(--text);
+      min-height: 100vh;
+    }
+
+    /* ── NAV ── */
+    nav {
+      background: var(--white);
+      border-bottom: 1px solid var(--border);
+      padding: 0 6vw;
+      height: 64px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    .nav-logo {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.4rem;
+      font-weight: 700;
+      color: var(--navy);
+    }
+
+    .nav-logo span { color: var(--blue); }
+
+    .api-status {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 0.8rem;
+      font-weight: 500;
+      color: var(--muted);
+    }
+
+    .status-dot {
+      width: 8px; height: 8px;
+      border-radius: 50%;
+      background: var(--warning);
+      animation: pulse 1.5s infinite;
+    }
+
+    .status-dot.connected    { background: var(--success); animation: none; }
+    .status-dot.disconnected { background: var(--error);   animation: none; }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50%       { opacity: 0.4; }
+    }
+
+    /* ── LAYOUT ── */
+    .container {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 2.5rem 6vw;
+    }
+
+    .page-header {
+      margin-bottom: 2.5rem;
+    }
+
+    .page-header h1 {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(1.8rem, 3vw, 2.4rem);
+      color: var(--navy);
+      margin-bottom: 0.4rem;
+    }
+
+    .page-header p {
+      font-size: 0.95rem;
+      color: var(--muted);
+    }
+
+    /* ── TOAST ── */
+    .toast-container {
+      position: fixed;
+      top: 80px;
+      right: 1.5rem;
+      z-index: 999;
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+    }
+
+    .toast {
+      background: var(--white);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 0.9rem 1.2rem;
+      font-size: 0.875rem;
+      font-weight: 500;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.10);
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      max-width: 320px;
+      animation: slideIn 0.3s ease;
+    }
+
+    .toast.success { border-left: 4px solid var(--success); }
+    .toast.error   { border-left: 4px solid var(--error); }
+    .toast.info    { border-left: 4px solid var(--blue); }
+
+    @keyframes slideIn {
+      from { transform: translateX(100%); opacity: 0; }
+      to   { transform: translateX(0);   opacity: 1; }
+    }
+
+    /* ── ADD FORM ── */
+    .add-form-card {
+      background: var(--white);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 2rem;
+      margin-bottom: 2rem;
+    }
+
+    .add-form-card h2 {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.3rem;
+      color: var(--navy);
+      margin-bottom: 1.5rem;
+    }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr auto;
+      gap: 1rem;
+      align-items: end;
+    }
+
+    .form-group label {
+      display: block;
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: var(--muted);
+      margin-bottom: 0.4rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .form-group input,
+    .form-group select {
+      width: 100%;
+      padding: 0.7rem 1rem;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      font-size: 0.9rem;
+      font-family: 'Inter', sans-serif;
+      color: var(--text);
+      background: var(--white);
+      outline: none;
+      transition: border-color 0.2s;
+    }
+
+    .form-group input:focus,
+    .form-group select:focus {
+      border-color: var(--blue);
+    }
+
+    .form-error {
+      font-size: 0.75rem;
+      color: var(--error);
+      margin-top: 0.3rem;
+      display: none;
+    }
+
+    .form-error.show { display: block; }
+
+    .btn-add {
+      background: var(--blue);
+      color: var(--white);
+      border: none;
+      padding: 0.72rem 1.5rem;
+      border-radius: 8px;
+      font-size: 0.9rem;
+      font-weight: 600;
+      cursor: pointer;
+      font-family: 'Inter', sans-serif;
+      transition: background 0.2s;
+      white-space: nowrap;
+    }
+
+    .btn-add:hover    { background: var(--blue-dark); }
+    .btn-add:disabled { background: var(--border); cursor: not-allowed; }
+
+    /* ── FILTER BAR ── */
+    .filter-bar {
+      display: flex;
+      gap: 0.75rem;
+      margin-bottom: 1.5rem;
+      flex-wrap: wrap;
+    }
+
+    .filter-btn {
+      padding: 0.45rem 1.1rem;
+      border-radius: 100px;
+      border: 1px solid var(--border);
+      background: var(--white);
+      font-size: 0.85rem;
+      font-weight: 500;
+      cursor: pointer;
+      color: var(--muted);
+      transition: all 0.2s;
+      font-family: 'Inter', sans-serif;
+    }
+
+    .filter-btn:hover,
+    .filter-btn.active {
+      background: var(--blue);
+      color: var(--white);
+      border-color: var(--blue);
+    }
+
+    /* ── MENU GRID ── */
+    .menu-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 1.2rem;
+    }
+
+    /* ── SKELETON LOADER ── */
+    .skeleton-card {
+      background: var(--white);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 1.5rem;
+      animation: shimmer 1.4s infinite;
+    }
+
+    .skeleton-line {
+      background: linear-gradient(90deg, #e8f0f8 25%, #d1e4f5 50%, #e8f0f8 75%);
+      background-size: 200% 100%;
+      border-radius: 6px;
+      height: 14px;
+      margin-bottom: 0.75rem;
+      animation: shimmer 1.4s infinite;
+    }
+
+    .skeleton-line.short { width: 50%; }
+    .skeleton-line.tall  { height: 20px; margin-bottom: 1rem; }
+
+    @keyframes shimmer {
+      0%   { background-position: 200% 0; }
+      100% { background-position: -200% 0; }
+    }
+
+    /* ── MENU CARD ── */
+    .menu-card {
+      background: var(--white);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 1.5rem;
+      transition: transform 0.2s, box-shadow 0.2s;
+      position: relative;
+    }
+
+    .menu-card:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 10px 28px rgba(43,123,185,0.10);
+    }
+
+    .card-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 0.75rem;
+    }
+
+    .card-category {
+      font-size: 0.72rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      padding: 0.25rem 0.65rem;
+      border-radius: 100px;
+      background: var(--blue-light);
+      color: var(--blue);
+    }
+
+    .card-available {
+      font-size: 0.75rem;
+      font-weight: 500;
+      color: var(--success);
+    }
+
+    .card-available.unavailable { color: var(--error); }
+
+    .card-name {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.15rem;
+      color: var(--navy);
+      margin-bottom: 0.4rem;
+    }
+
+    .card-id {
+      font-size: 0.72rem;
+      color: var(--muted);
+      margin-bottom: 1rem;
+      font-family: monospace;
+    }
+
+    .card-price {
+      font-size: 1.3rem;
+      font-weight: 700;
+      color: var(--blue);
+      margin-bottom: 1rem;
+    }
+
+    .card-actions {
+      display: flex;
+      gap: 0.6rem;
+    }
+
+    .btn-delete {
+      flex: 1;
+      padding: 0.5rem;
+      border: 1px solid #fecaca;
+      background: #fff5f5;
+      color: var(--error);
+      border-radius: 7px;
+      font-size: 0.82rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+      font-family: 'Inter', sans-serif;
+    }
+
+    .btn-delete:hover { background: var(--error); color: var(--white); border-color: var(--error); }
+
+    .btn-toggle {
+      flex: 1;
+      padding: 0.5rem;
+      border: 1px solid var(--border);
+      background: var(--off-white);
+      color: var(--muted);
+      border-radius: 7px;
+      font-size: 0.82rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+      font-family: 'Inter', sans-serif;
+    }
+
+    .btn-toggle:hover { background: var(--blue-light); color: var(--blue); border-color: var(--blue); }
+
+    /* ── EMPTY STATE ── */
+    .empty-state {
+      text-align: center;
+      padding: 4rem 2rem;
+      color: var(--muted);
+    }
+
+    .empty-state .icon { font-size: 3rem; margin-bottom: 1rem; display: block; }
+    .empty-state h3    { font-size: 1.1rem; color: var(--navy); margin-bottom: 0.5rem; }
+    .empty-state p     { font-size: 0.875rem; }
+
+    /* ── ERROR STATE ── */
+    .error-state {
+      text-align: center;
+      padding: 4rem 2rem;
+      color: var(--error);
+    }
+
+    .error-state .icon { font-size: 3rem; margin-bottom: 1rem; display: block; }
+    .error-state h3    { font-size: 1.1rem; margin-bottom: 0.5rem; }
+    .error-state p     { font-size: 0.875rem; color: var(--muted); }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 768px) {
+      .form-grid {
+        grid-template-columns: 1fr 1fr;
+      }
+
+      .btn-add { grid-column: 1 / -1; }
+    }
+
+    @media (max-width: 480px) {
+      .form-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- NAV -->
+  <nav>
+    <div class="nav-logo">Brewed<span>&</span>Co. <small style="font-size:0.75rem;font-family:Inter;font-weight:400;color:var(--muted)">Live Menu</small></div>
+    <div class="api-status">
+      <div class="status-dot" id="statusDot"></div>
+      <span id="statusText">Connecting...</span>
+    </div>
+  </nav>
+
+  <!-- TOAST CONTAINER -->
+  <div class="toast-container" id="toastContainer"></div>
+
+  <!-- MAIN -->
+  <div class="container">
+
+    <div class="page-header">
+      <h1>Menu Manager ☕</h1>
+      <p>Live data from backend API — add, remove, and manage items in real time.</p>
+    </div>
+
+    <!-- ADD FORM -->
+    <div class="add-form-card">
+      <h2>➕ Add New Menu Item</h2>
+      <div class="form-grid">
+        <div class="form-group">
+          <label for="itemName">Item Name</label>
+          <input type="text" id="itemName" placeholder="e.g. Iced Latte" />
+          <div class="form-error" id="nameError">Name is required</div>
+        </div>
+        <div class="form-group">
+          <label for="itemCategory">Category</label>
+          <select id="itemCategory">
+            <option value="">Select category</option>
+            <option value="coffee">☕ Coffee</option>
+            <option value="drinks">🧋 Drinks</option>
+            <option value="food">🥐 Food</option>
+          </select>
+          <div class="form-error" id="categoryError">Category is required</div>
+        </div>
+        <div class="form-group">
+          <label for="itemPrice">Price ($)</label>
+          <input type="number" id="itemPrice" placeholder="e.g. 4.50" step="0.01" min="0.01" />
+          <div class="form-error" id="priceError">Valid price is required</div>
+        </div>
+        <button class="btn-add" id="addBtn" onclick="addItem()">Add Item</button>
+      </div>
+    </div>
+
+    <!-- FILTER BAR -->
+    <div class="filter-bar">
+      <button class="filter-btn active" onclick="filterItems('all', this)">All</button>
+      <button class="filter-btn" onclick="filterItems('coffee', this)">☕ Coffee</button>
+      <button class="filter-btn" onclick="filterItems('drinks', this)">🧋 Drinks</button>
+      <button class="filter-btn" onclick="filterItems('food',   this)">🥐 Food</button>
+    </div>
+
+    <!-- MENU GRID -->
+    <div class="menu-grid" id="menuGrid">
+      <!-- Skeleton loaders -->
+      ${[1,2,3,4].map(() => `
+        <div class="skeleton-card">
+          <div class="skeleton-line short"></div>
+          <div class="skeleton-line tall"></div>
+          <div class="skeleton-line short"></div>
+        </div>
+      `).join('')}
+    </div>
+
+  </div>
+
+  <script>
+    // ── CONFIG ──
+    // Change this to your backend URL when deployed
+    const API_BASE = 'http://localhost:3001';
+
+    let allItems = [];
+    let currentFilter = 'all';
+
+    // ── TOAST NOTIFICATIONS ──
+    function showToast(message, type = 'info') {
+      const icons = { success: '✅', error: '❌', info: 'ℹ️' };
+      const container = document.getElementById('toastContainer');
+      const toast = document.createElement('div');
+      toast.className = `toast ${type}`;
+      toast.innerHTML = `<span>${icons[type]}</span><span>${message}</span>`;
+      container.appendChild(toast);
+      setTimeout(() => toast.remove(), 3500);
+    }
+
+    // ── API STATUS ──
+    function setStatus(state) {
+      const dot  = document.getElementById('statusDot');
+      const text = document.getElementById('statusText');
+      const states = {
+        connecting  : { cls: '',             label: 'Connecting...' },
+        connected   : { cls: 'connected',    label: 'API Connected' },
+        disconnected: { cls: 'disconnected', label: 'API Offline — showing cached data' }
+      };
+      dot.className  = `status-dot ${states[state].cls}`;
+      text.textContent = states[state].label;
+    }
+
+    // ── FETCH ALL ITEMS ──
+    async function fetchMenu(category = '') {
+      try {
+        setStatus('connecting');
+        const url = category && category !== 'all'
+          ? `${API_BASE}/api/menu?category=${category}`
+          : `${API_BASE}/api/menu`;
+
+        const response = await fetch(url);
+
+        if (!response.ok) {
+          throw new Error(`HTTP Error: ${response.status}`);
+        }
+
+        const result = await response.json();
+        allItems = result.data;
+        setStatus('connected');
+        renderCards(allItems);
+
+      } catch (err) {
+        setStatus('disconnected');
+        // Show demo data if API is offline
+        renderError('Could not reach the backend API. Make sure server_db.js is running on port 3001.');
+        console.error('Fetch error:', err.message);
+      }
+    }
+
+    // ── RENDER CARDS ──
+    function renderCards(items) {
+      const grid = document.getElementById('menuGrid');
+
+      if (items.length === 0) {
+        grid.innerHTML = `
+          <div class="empty-state" style="grid-column:1/-1">
+            <span class="icon">☕</span>
+            <h3>No items found</h3>
+            <p>Try a different filter or add a new item above.</p>
+          </div>`;
+        return;
+      }
+
+      const categoryEmoji = { coffee: '☕', drinks: '🧋', food: '🥐' };
+
+      grid.innerHTML = items.map(item => `
+        <div class="menu-card" id="card-${item._id}">
+          <div class="card-top">
+            <span class="card-category">${categoryEmoji[item.category] || ''} ${item.category}</span>
+            <span class="card-available ${item.available ? '' : 'unavailable'}">
+              ${item.available ? '● Available' : '● Unavailable'}
+            </span>
+          </div>
+          <div class="card-name">${escapeHtml(item.name)}</div>
+          <div class="card-id">ID: ${item._id}</div>
+          <div class="card-price">$${item.price.toFixed(2)}</div>
+          <div class="card-actions">
+            <button class="btn-toggle" onclick="toggleAvailability('${item._id}', ${item.available})">
+              ${item.available ? 'Mark Unavailable' : 'Mark Available'}
+            </button>
+            <button class="btn-delete" onclick="deleteItem('${item._id}', '${escapeHtml(item.name)}')">
+              Delete
+            </button>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    // ── RENDER ERROR ──
+    function renderError(message) {
+      document.getElementById('menuGrid').innerHTML = `
+        <div class="error-state" style="grid-column:1/-1">
+          <span class="icon">⚠️</span>
+          <h3>Connection Failed</h3>
+          <p>${message}</p>
+        </div>`;
+    }
+
+    // ── FILTER ──
+    function filterItems(category, btn) {
+      currentFilter = category;
+      document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      fetchMenu(category);
+    }
+
+    // ── VALIDATE FORM ──
+    function validateForm() {
+      let valid = true;
+      const name     = document.getElementById('itemName').value.trim();
+      const category = document.getElementById('itemCategory').value;
+      const price    = parseFloat(document.getElementById('itemPrice').value);
+
+      const nameErr     = document.getElementById('nameError');
+      const categoryErr = document.getElementById('categoryError');
+      const priceErr    = document.getElementById('priceError');
+
+      nameErr.classList.remove('show');
+      categoryErr.classList.remove('show');
+      priceErr.classList.remove('show');
+
+      if (!name) { nameErr.classList.add('show'); valid = false; }
+      if (!category) { categoryErr.classList.add('show'); valid = false; }
+      if (!price || price <= 0) { priceErr.classList.add('show'); valid = false; }
+
+      return valid;
+    }
+
+    // ── ADD ITEM ──
+    async function addItem() {
+      if (!validateForm()) return;
+
+      const addBtn = document.getElementById('addBtn');
+      addBtn.disabled = true;
+      addBtn.textContent = 'Adding...';
+
+      const name     = document.getElementById('itemName').value.trim();
+      const category = document.getElementById('itemCategory').value;
+      const price    = parseFloat(document.getElementById('itemPrice').value);
+
+      try {
+        const response = await fetch(`${API_BASE}/api/menu`, {
+          method : 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body   : JSON.stringify({ name, category, price })
+        });
+
+        const result = await response.json();
+
+        if (!response.ok) {
+          throw new Error(result.message || 'Failed to add item');
+        }
+
+        showToast(`"${name}" added successfully!`, 'success');
+
+        // Clear form
+        document.getElementById('itemName').value     = '';
+        document.getElementById('itemCategory').value = '';
+        document.getElementById('itemPrice').value    = '';
+
+        // Refresh list
+        await fetchMenu(currentFilter);
+
+      } catch (err) {
+        showToast(err.message, 'error');
+      } finally {
+        addBtn.disabled    = false;
+        addBtn.textContent = 'Add Item';
+      }
+    }
+
+    // ── DELETE ITEM ──
+    async function deleteItem(id, name) {
+      if (!confirm(`Delete "${name}"?`)) return;
+
+      try {
+        const response = await fetch(`${API_BASE}/api/menu/${id}`, {
+          method: 'DELETE'
+        });
+
+        const result = await response.json();
+
+        if (!response.ok) throw new Error(result.message || 'Delete failed');
+
+        showToast(`"${name}" deleted.`, 'success');
+        document.getElementById(`card-${id}`)?.remove();
+
+      } catch (err) {
+        showToast(err.message, 'error');
+      }
+    }
+
+    // ── TOGGLE AVAILABILITY ──
+    async function toggleAvailability(id, currentStatus) {
+      try {
+        const response = await fetch(`${API_BASE}/api/menu/${id}`, {
+          method : 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body   : JSON.stringify({ available: !currentStatus })
+        });
+
+        const result = await response.json();
+        if (!response.ok) throw new Error(result.message || 'Update failed');
+
+        showToast('Availability updated!', 'info');
+        await fetchMenu(currentFilter);
+
+      } catch (err) {
+        showToast(err.message, 'error');
+      }
+    }
+
+    // ── SECURITY: prevent XSS ──
+    function escapeHtml(str) {
+      return str
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;');
+    }
+
+    // ── INIT ──
+    fetchMenu();
+  </script>
+</body>
+</html>
+
