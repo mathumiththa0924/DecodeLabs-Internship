@@ -1,0 +1,17 @@
+{
+  "name": "brewed-co-database",
+  "version": "1.0.0",
+  "description": "Brewed & Co. Cafe API with MongoDB — DecodeLabs Internship Project 3",
+  "main": "server_db.js",
+  "scripts": {
+    "start": "node server_db.js",
+    "dev": "nodemon server_db.js"
+  },
+  "dependencies": {
+    "express": "^4.18.2",
+    "mongoose": "^8.0.0"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.1"
+  }
+}
